@@ -13,6 +13,7 @@ app.get("/", (req, res) => {
   res.send("Server running ... ");
 });
 
+// Sign up query
 const SIGNUP_HASURA_OPERATION = `
 mutation sign_up($email: String = "ephy@gmail.com", $first_name: String = "", $last_name: String = "", $password: String = "") {
   insert_users_one(object: {email: $email, first_name: $first_name, last_name: $last_name, password: $password}) {
@@ -23,7 +24,70 @@ mutation sign_up($email: String = "ephy@gmail.com", $first_name: String = "", $l
   }
 }
 `;
-// execute the parent operation in Hasura
+
+// Login Query
+const LOGIN_HASURA_OPERATION = `
+query Login($email: String!, $password: String!) {
+  users(where: {email: {_eq: $email}, password: {_eq: $password}}) {
+    email
+    first_name
+    last_name
+    gender
+    order_items{
+      sales_count
+      sales
+      book_id
+      created_at
+      updated_at
+      payment_id
+    }
+    shopping_sessions{
+      cart_items{
+        book_id
+        created_at
+        updated_at
+      }
+      created_at
+      updated_at
+    }
+    
+    accounts{
+      id
+      balance
+      name
+    }
+    book{
+      id
+      title
+      ISBN
+      categories{
+        name
+      }
+      comment
+      cover_photo
+      description
+      discount{
+      active
+      desc
+        discount_percentage
+        name
+      }
+      edition
+      file
+      page_size
+      price
+      published_at
+      rating
+      sample_file
+      author_id
+    }
+    
+    
+  }
+}
+`;
+
+// signup query execute
 const signup_execute = async (variables) => {
   const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
     method: "POST",
@@ -38,21 +102,7 @@ const signup_execute = async (variables) => {
   return data;
 };
 
-const LOGIN_HASURA_OPERATION = `
-query{
-  books{
-    id
-    title
-    ISBN
-    category
-    {
-      name
-    }
-  }
-}
-`;
-
-// execute the parent operation in Hasura
+// login query execute
 const login_execute = async (variables) => {
   const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
     method: "POST",
@@ -117,13 +167,12 @@ app.post("/signup", async (req, res) => {
 // Login Request Handler
 app.post("/Login", async (req, res) => {
   // get request input
-  const {} = req.body.input;
+  const { email, password } = req.body.input;
 
   // run some business logic
 
   // execute the Hasura operation
-  const { data, errors } = await login_execute({});
-  console.log("The login handler");
+  const { data, errors } = await execute({ email, password });
 
   // if Hasura operation errors, then throw error
   if (errors) {
@@ -132,7 +181,7 @@ app.post("/Login", async (req, res) => {
 
   // success
   return res.json({
-    ...data.books,
+    ...data.users,
   });
 });
 
