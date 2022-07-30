@@ -27,66 +27,14 @@ mutation sign_up($email: String = "ephy@gmail.com", $first_name: String = "", $l
 
 // Login Query
 const LOGIN_HASURA_OPERATION = `
-query Login($email: String!, $password: String!) {
-  users(where: {email: {_eq: $email}, password: {_eq: $password}}) {
+query login($email: String!){
+  users(where: {email: {_eq: $email}}){
+		id
     email
-    first_name
-    last_name
-    gender
-    order_items{
-      sales_count
-      sales
-      book_id
-      created_at
-      updated_at
-      payment_id
-    }
-    shopping_sessions{
-      cart_items{
-        book_id
-        created_at
-        updated_at
-      }
-      created_at
-      updated_at
-    }
-    
-    accounts{
-      id
-      balance
-      name
-    }
-    book{
-      id
-      title
-      ISBN
-      categories{
-        name
-      }
-      comment
-      cover_photo
-      description
-      discount{
-      active
-      desc
-        discount_percentage
-        name
-      }
-      edition
-      file
-      page_size
-      price
-      published_at
-      rating
-      sample_file
-      author_id
-    }
-    
-    
+    password
   }
 }
 `;
-
 // signup query execute
 const signup_execute = async (variables) => {
   const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
@@ -106,6 +54,7 @@ const signup_execute = async (variables) => {
 const login_execute = async (variables) => {
   const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
     method: "POST",
+    headers: { "x-hasura-admin-secret": "myadminsecretkey" },
     body: JSON.stringify({
       query: LOGIN_HASURA_OPERATION,
       variables,
@@ -150,7 +99,7 @@ app.post("/signup", async (req, res) => {
     exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
   };
 
-  console.log("The name is ..." + data.insert_users_one.first_name);
+  console.log("The name is ..." + data.insert_users_one.gender);
 
   const token = jwt.sign(
     tokenContents,
@@ -169,19 +118,40 @@ app.post("/Login", async (req, res) => {
   // get request input
   const { email, password } = req.body.input;
 
-  // run some business logic
-
-  // execute the Hasura operation
-  const { data, errors } = await execute({ email, password });
-
+  console.log(email, password);
+  const { data, errors } = await login_execute({ email });
+  console.log("ethe data is " + data);
   // if Hasura operation errors, then throw error
   if (errors) {
     return res.status(400).json(errors[0]);
   }
 
+  const tokenContents = {
+    sub: data.users.id,
+    name: data.users.first_name,
+    iat: Date.now() / 1000,
+    iss: "https://myapp.com/",
+    "https://hasura.io/jwt/claims": {
+      "x-hasura-allowed-roles": ["user", "anonymous", "author"],
+      "x-hasura-user-id": data.users.id,
+      "x-hasura-default-role": "user",
+      "x-hasura-role": "user",
+    },
+    exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
+  };
+
+  console.log("The name is ..." + data.users[0].email);
+
+  const token = jwt.sign(
+    tokenContents,
+    process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
+  );
+  console.log(token);
+
   // success
   return res.json({
     ...data.users,
+    token: token,
   });
 });
 
