@@ -15,12 +15,13 @@ app.get("/", (req, res) => {
 
 // Sign up query
 const SIGNUP_HASURA_OPERATION = `
-mutation sign_up($email: String = "ephy@gmail.com", $first_name: String = "", $last_name: String = "", $password: String = "") {
-  insert_users_one(object: {email: $email, first_name: $first_name, last_name: $last_name, password: $password}) {
+mutation sign_up($email: String = "ephy@gmail.com", $first_name: String = "",$isAuthor: Boolean = "false", $last_name: String = "", $password: String = "") {
+  insert_users_one(object: {email: $email, first_name: $first_name, last_name: $last_name, password: $password , isAuthor: $isAuthor}) {
+    id
     email
     first_name
     last_name
-    id
+    isAuthor
   }
 }
 `;
@@ -70,7 +71,7 @@ const login_execute = async (variables) => {
 // Sign Up Request Handler
 app.post("/signup", async (req, res) => {
   // get request input
-  const { email, first_name, last_name } = req.body.input;
+  const { email, first_name, last_name, isAuthor } = req.body.input;
 
   // run some business logic
   const password = await bcrypt.hash(req.body.input.password, 10);
@@ -80,6 +81,7 @@ app.post("/signup", async (req, res) => {
     first_name,
     last_name,
     password,
+    isAuthor,
   });
 
   // if Hasura operation errors, then throw error
@@ -101,12 +103,41 @@ app.post("/signup", async (req, res) => {
     exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
   };
 
-  console.log("The name is ..." + data.insert_users_one.gender);
+  // token claim for users
+  const usertokenContents = {
+    sub: data.insert_users_one.id,
+    name: first_name,
+    iat: Date.now() / 1000,
+    iss: "https://myapp.com/",
+    "https://hasura.io/jwt/claims": {
+      "x-hasura-allowed-roles": ["user", "anonymous", "author"],
+      "x-hasura-user-id": data.insert_users_one.id,
+      "x-hasura-default-role": "user",
+      "x-hasura-role": "user",
+    },
+    exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
+  };
+
+  // token claim for authors
+  const authortokenContents = {
+    sub: data.insert_users_one.id,
+    name: first_name,
+    iat: Date.now() / 1000,
+    iss: "https://myapp.com/",
+    "https://hasura.io/jwt/claims": {
+      "x-hasura-allowed-roles": ["user", "anonymous", "author"],
+      "x-hasura-user-id": data.insert_users_one.id,
+      "x-hasura-default-role": "author",
+      "x-hasura-role": "author",
+    },
+    exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
+  };
 
   const token = jwt.sign(
-    tokenContents,
+    data.insert_users_one.isAuthor ? authortokenContents : usertokenContents,
     process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
   );
+  console.log(data.insert_users_one.isAuthor);
   console.log(token);
   // success
   return res.json({
