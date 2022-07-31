@@ -32,6 +32,8 @@ query login($email: String!){
 		id
     email
     password
+    isAuthor
+    first_name
   }
 }
 `;
@@ -120,37 +122,63 @@ app.post("/Login", async (req, res) => {
 
   console.log(email, password);
   const { data, errors } = await login_execute({ email });
-  console.log("ethe data is " + data);
   // if Hasura operation errors, then throw error
   if (errors) {
     return res.status(400).json(errors[0]);
   }
 
-  const tokenContents = {
-    sub: data.users.id,
-    name: data.users.first_name,
+  // token claim for users
+  const usertokenContents = {
+    sub: data.users[0].id,
+    name: data.users[0].first_name,
     iat: Date.now() / 1000,
     iss: "https://myapp.com/",
     "https://hasura.io/jwt/claims": {
       "x-hasura-allowed-roles": ["user", "anonymous", "author"],
-      "x-hasura-user-id": data.users.id,
+      "x-hasura-user-id": data.users[0].id,
       "x-hasura-default-role": "user",
       "x-hasura-role": "user",
     },
     exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
   };
 
-  console.log("The name is ..." + data.users[0].email);
+  // token claim for authors
+  const authortokenContents = {
+    sub: data.users[0].id,
+    name: data.users[0].first_name,
+    iat: Date.now() / 1000,
+    iss: "https://myapp.com/",
+    "https://hasura.io/jwt/claims": {
+      "x-hasura-allowed-roles": ["user", "anonymous", "author"],
+      "x-hasura-user-id": data.users[0].id,
+      "x-hasura-default-role": "author",
+      "x-hasura-role": "author",
+    },
+    exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
+  };
 
   const token = jwt.sign(
-    tokenContents,
+    data.users[0].isAuthor ? authortokenContents : usertokenContents,
     process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
   );
+
+  // if (data.users[0].isAuthor) {
+  //   console.log("He is an Author of the book.");
+  //   const token = jwt.sign(
+  //     authortokenContents,
+  //     process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
+  //   );
+  // } else if (!data.users[0].isAuthor) {
+  //   const token = jwt.sign(
+  //     usertokenContents,
+  //     process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
+  //   );
+  // }
   console.log(token);
 
   // success
   return res.json({
-    ...data.users,
+    ...data.users[0],
     token: token,
   });
 });
