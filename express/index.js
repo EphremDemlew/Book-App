@@ -151,12 +151,16 @@ app.post("/Login", async (req, res) => {
   // get request input
   const { email, password } = req.body.input;
 
-  console.log(email, password);
   const { data, errors } = await login_execute({ email });
   // if Hasura operation errors, then throw error
   if (errors) {
     return res.status(400).json(errors[0]);
   }
+
+  const validPassword = await bcrypt.compare(password, data.users[0].password);
+  if (!validPassword)
+    return res.status(400).json({ message: "Invalid Email or Password." });
+  console.log("The password is " + validPassword);
 
   // token claim for users
   const usertokenContents = {
@@ -193,19 +197,9 @@ app.post("/Login", async (req, res) => {
     process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
   );
 
-  // if (data.users[0].isAuthor) {
-  //   console.log("He is an Author of the book.");
-  //   const token = jwt.sign(
-  //     authortokenContents,
-  //     process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
-  //   );
-  // } else if (!data.users[0].isAuthor) {
-  //   const token = jwt.sign(
-  //     usertokenContents,
-  //     process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
-  //   );
-  // }
+  console.log("......................");
   console.log(token);
+  console.log("......................");
 
   // success
   return res.json({
