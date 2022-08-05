@@ -1,0 +1,36 @@
+table:
+  schema: public
+  name: discount
+array_relationships:
+  - name: books
+    using:
+      foreign_key_constraint_on:
+        column: discount_id
+        table:
+          schema: public
+          name: books
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - active
+        - desc
+        - discount_percentage
+        - name
+      filter: {}
+  - role: author
+    permission:
+      columns:
+        - active
+        - desc
+        - discount_percentage
+        - name
+      filter: {}
+  - role: user
+    permission:
+      columns:
+        - active
+        - desc
+        - discount_percentage
+        - name
+      filter: {}

@@ -1,0 +1,104 @@
+table:
+  schema: public
+  name: users
+object_relationships:
+  - name: Author
+    using:
+      foreign_key_constraint_on: author_id
+  - name: book
+    using:
+      foreign_key_constraint_on: book_id
+array_relationships:
+  - name: accounts
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: account
+  - name: books
+    using:
+      foreign_key_constraint_on:
+        column: author_id
+        table:
+          schema: public
+          name: books
+  - name: order_items
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: order_items
+  - name: shopping_sessions
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: shopping_session
+  - name: users
+    using:
+      foreign_key_constraint_on:
+        column: author_id
+        table:
+          schema: public
+          name: users
+select_permissions:
+  - role: author
+    permission:
+      columns:
+        - id
+        - first_name
+        - last_name
+        - email
+        - password
+        - gender
+        - birth_date
+        - isAuthor
+        - book_id
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+  - role: user
+    permission:
+      columns:
+        - id
+        - first_name
+        - last_name
+        - email
+        - password
+        - gender
+        - birth_date
+        - isAuthor
+        - book_id
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+update_permissions:
+  - role: author
+    permission:
+      columns:
+        - birth_date
+        - email
+        - first_name
+        - gender
+        - last_name
+        - password
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+      check: null
+  - role: user
+    permission:
+      columns:
+        - birth_date
+        - email
+        - first_name
+        - gender
+        - last_name
+        - password
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+      check: null

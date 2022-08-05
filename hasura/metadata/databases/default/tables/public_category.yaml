@@ -1,0 +1,52 @@
+table:
+  schema: public
+  name: category
+object_relationships:
+  - name: book
+    using:
+      foreign_key_constraint_on: book_id
+array_relationships:
+  - name: books
+    using:
+      foreign_key_constraint_on:
+        column: category_id
+        table:
+          schema: public
+          name: books
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - name
+        - book_id
+        - id
+      filter: {}
+  - role: author
+    permission:
+      columns:
+        - name
+        - book_id
+        - id
+      filter:
+        _and:
+          - book:
+              users:
+                isAuthor:
+                  _eq: true
+          - book:
+              users:
+                id:
+                  _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+        - name
+        - book_id
+        - id
+      filter:
+        book:
+          users:
+            id:
+              _eq: X-Hasura-User-Id
+      allow_aggregations: true

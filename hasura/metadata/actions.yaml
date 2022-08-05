@@ -1,6 +1,33 @@
-actions: []
+actions:
+  - name: addBook
+    definition:
+      kind: synchronous
+      handler: http://localhost:5000/addBook
+  - name: login
+    definition:
+      kind: ""
+      handler: http://localhost:5000/login
+    permissions:
+      - role: anonymous
+      - role: user
+      - role: author
+  - name: signup
+    definition:
+      kind: synchronous
+      handler: http://localhost:5000/signup
+    permissions:
+      - role: author
+      - role: user
+      - role: anonymous
 custom_types:
-    enums: []
-    input_objects: []
-    objects: []
-    scalars: []
+  enums: []
+  input_objects: []
+  objects:
+    - name: SignUpOutput
+    - name: BooksDerivedOutput
+    - name: LoginOutput
+    - name: SignupDerivedOutput
+    - name: SignupAuthorOutput
+    - name: AuthorSignupOutput
+    - name: AddBookOutput
+  scalars: []

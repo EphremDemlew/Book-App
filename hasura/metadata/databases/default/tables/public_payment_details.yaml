@@ -1,0 +1,15 @@
+table:
+  schema: public
+  name: payment_details
+object_relationships:
+  - name: order_item
+    using:
+      foreign_key_constraint_on: order_id
+array_relationships:
+  - name: order_items
+    using:
+      foreign_key_constraint_on:
+        column: payment_id
+        table:
+          schema: public
+          name: order_items

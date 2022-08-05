@@ -1,0 +1,89 @@
+type Mutation {
+  addBook(
+    title: String!
+    name: String!
+    type: String!
+    base64str: String!
+    cover_photo: String
+    edition: Int
+    page_size: Int
+    price: money
+    sample_file: String
+  ): AddBookOutput
+}
+
+type Query {
+  login(
+    email: String!
+    password: String!
+  ): LoginOutput
+}
+
+type Mutation {
+  signup(
+    email: String
+    first_name: String
+    last_name: String
+    password: String
+    isAuthor: Boolean
+  ): SignUpOutput
+}
+
+type SignUpOutput {
+  id: String!
+  email: String!
+  first_name: String!
+  last_name: String!
+  isAuthor: Boolean!
+  token: String!
+}
+
+type BooksDerivedOutput {
+  ISBN: String!
+  id: uuid!
+  title: String!
+}
+
+type LoginOutput {
+  email: String!
+  id: uuid!
+  password: String!
+  first_name: String!
+  token: String!
+  isAuthor: String!
+}
+
+type SignupDerivedOutput {
+  email: String!
+  first_name: String!
+  id: String!
+  last_name: String!
+  token: String!
+}
+
+type SignupAuthorOutput {
+  id: uuid!
+  email: String!
+  first_name: String!
+  isAuthor: Boolean!
+  last_name: String!
+  token: String!
+}
+
+type AuthorSignupOutput {
+  id: uuid!
+  email: String!
+  first_name: String!
+  last_name: String!
+  isAuthor: Boolean!
+  token: String!
+}
+
+type AddBookOutput {
+  edition: Int!
+  file: String!
+  id: uuid!
+  sample_file: String!
+  title: String!
+}
+
