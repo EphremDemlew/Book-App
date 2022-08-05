@@ -2,6 +2,9 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
+const signup_query = require("./queries/signup_query");
+const login_query = require("./queries/login_query");
+const fileUpload_query = require("./queries/fileUploade_query");
 require("dotenv").config();
 
 const app = express();
@@ -13,38 +16,13 @@ app.get("/", (req, res) => {
   res.send("Server running ... ");
 });
 
-// Sign up query
-const SIGNUP_HASURA_OPERATION = `
-mutation sign_up($email: String = "ephy@gmail.com", $first_name: String = "",$isAuthor: Boolean = "false", $last_name: String = "", $password: String = "") {
-  insert_users_one(object: {email: $email, first_name: $first_name, last_name: $last_name, password: $password , isAuthor: $isAuthor}) {
-    id
-    email
-    first_name
-    last_name
-    isAuthor
-  }
-}
-`;
-
-// Login Query
-const LOGIN_HASURA_OPERATION = `
-query login($email: String!){
-  users(where: {email: {_eq: $email}}){
-		id
-    email
-    password
-    isAuthor
-    first_name
-  }
-}
-`;
 // signup query execute
 const signup_execute = async (variables) => {
   const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
     method: "POST",
     headers: { "x-hasura-admin-secret": "myadminsecretkey" },
     body: JSON.stringify({
-      query: SIGNUP_HASURA_OPERATION,
+      query: signup_query,
       variables,
     }),
   });
@@ -59,7 +37,22 @@ const login_execute = async (variables) => {
     method: "POST",
     headers: { "x-hasura-admin-secret": "myadminsecretkey" },
     body: JSON.stringify({
-      query: LOGIN_HASURA_OPERATION,
+      query: login_query,
+      variables,
+    }),
+  });
+  const data = await fetchResponse.json();
+  console.log("DEBUG: ", data);
+  return data;
+};
+
+// file Upload query execute
+const fileUpload_execute = async (variables) => {
+  const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
+    method: "POST",
+    headers: { "x-hasura-admin-secret": "myadminsecretkey" },
+    body: JSON.stringify({
+      query: fileUpload_query,
       variables,
     }),
   });
@@ -205,6 +198,51 @@ app.post("/Login", async (req, res) => {
   return res.json({
     ...data.users[0],
     token: token,
+  });
+});
+
+app.post("/fileUploade", async (req, res) => {
+  console.log("Sucess fully reached the express");
+});
+
+// Request Handler
+app.post("/addBook", async (req, res) => {
+  // get request input
+  const {
+    title,
+    name,
+    type,
+    base64str,
+    cover_photo,
+    edition,
+    page_size,
+    price,
+    sample_file,
+  } = req.body.input;
+
+  // run some business logic
+
+  // execute the Hasura operation
+  const { data, errors } = await fileUpload_execute({
+    title,
+    name,
+    type,
+    base64str,
+    cover_photo,
+    edition,
+    page_size,
+    price,
+    sample_file,
+  });
+
+  // if Hasura operation errors, then throw error
+  if (errors) {
+    return res.status(400).json(errors[0]);
+  }
+
+  // success
+  return res.json({
+    ...data.insert_books_one,
   });
 });
 
