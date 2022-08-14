@@ -8,6 +8,7 @@ const login_query = require("./queries/login_query");
 const fileUpload_query = require("./queries/fileUploade_query");
 const fileUploade = require("./file_uploade/book_file_uploade");
 const checkOut = require("./payment/checkout");
+const payVerification = require("./payment/checkout");
 require("dotenv").config();
 
 const app = express();
@@ -217,6 +218,9 @@ app.post("/Login", async (req, res) => {
 
 // Checkout request handler
 app.post("/order", checkOut);
+
+// Checkout verification handler
+app.post("/orderVerify", payVerification);
 
 // Request Handler
 app.post("/addBook", fileUploade);
