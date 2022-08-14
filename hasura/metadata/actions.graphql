@@ -38,6 +38,28 @@ type Mutation {
   ): SignUpOutput
 }
 
+type Mutation {
+  uploadeBook(
+    book_file_base64str: String!
+    book_file_name: String!
+    book_file_type: String!
+    comment: String!
+    cover_photo_base64str: String!
+    cover_photo_name: String!
+    description: String!
+    ISBN: String!
+    edition: Int!
+    page_size: Int!
+    price: Float!
+    sample_file_base64str: String!
+    sample_file_name: String!
+    sample_file_type: String!
+    title: String!
+    cover_photo_type: String!
+    rating: Float!
+  ): uploadeBookOutput
+}
+
 type SignUpOutput {
   id: String!
   email: String!
@@ -101,5 +123,11 @@ type LoginDerivedOutput {
   isAuthor: String!
   password: String!
   token: String!
+}
+
+type uploadeBookOutput {
+  book_file_path: String!
+  cover_photo_path: String!
+  sample_file_path: String!
 }
 

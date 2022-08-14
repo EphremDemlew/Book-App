@@ -21,6 +21,10 @@ actions:
       - role: author
       - role: user
       - role: anonymous
+  - name: uploadeBook
+    definition:
+      kind: synchronous
+      handler: http://localhost:5000/uploadeBook
 custom_types:
   enums: []
   input_objects: []
@@ -33,4 +37,5 @@ custom_types:
     - name: AuthorSignupOutput
     - name: AddBookOutput
     - name: LoginDerivedOutput
+    - name: uploadeBookOutput
   scalars: []
