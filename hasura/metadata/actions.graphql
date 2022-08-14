@@ -111,9 +111,9 @@ type AuthorSignupOutput {
 }
 
 type AddBookOutput {
-  book_file_path: String!
-  cover_photo_path: String!
-  sample_file_path: String!
+  file: String!
+  cover_photo: String!
+  sample: String!
 }
 
 type LoginDerivedOutput {

@@ -30,15 +30,15 @@ const fileUpload = async (req, res, next) => {
       textfileBuffer,
       "base64"
     );
-    fs.writeFileSync(
-      "./public/files/" + sample_file_name,
-      samplefileBuffer,
-      "base64"
-    );
 
     fs.writeFileSync(
       "./public/files/" + cover_photo_name,
       imagefileBuffer,
+      "base64"
+    );
+    fs.writeFileSync(
+      "./public/files/" + sample_file_name,
+      samplefileBuffer,
       "base64"
     );
 
@@ -88,7 +88,7 @@ const fileUpload = async (req, res, next) => {
 
     // success
     return res.json({
-      // file: "/files/" + book_file_name,
+      file: "/files/" + book_file_name,
       cover_photo: "/files/" + cover_photo_name,
       sample: "/files/" + sample_file_name,
     });
