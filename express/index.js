@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const signup_query = require("./queries/signup_query");
 const login_query = require("./queries/login_query");
 const fileUpload_query = require("./queries/fileUploade_query");
+const fileUploade = require("./file_uploade/book_file_uploade");
 require("dotenv").config();
 
 const app = express();
@@ -208,50 +209,8 @@ app.post("/Login", async (req, res) => {
   });
 });
 
-app.post("/fileUploade", async (req, res) => {
-  console.log("Sucess fully reached the express");
-});
-
 // Request Handler
-app.post("/addBook", async (req, res) => {
-  // get request input
-  const {
-    title,
-    name,
-    type,
-    base64str,
-    cover_photo,
-    edition,
-    page_size,
-    price,
-    sample_file,
-  } = req.body.input;
-
-  // run some business logic
-
-  // execute the Hasura operation
-  const { data, errors } = await fileUpload_execute({
-    title,
-    name,
-    type,
-    base64str,
-    cover_photo,
-    edition,
-    page_size,
-    price,
-    sample_file,
-  });
-
-  // if Hasura operation errors, then throw error
-  if (errors) {
-    return res.status(400).json(errors[0]);
-  }
-
-  // success
-  return res.json({
-    ...data.insert_books_one,
-  });
-});
+app.post("/addBook", fileUploade);
 
 const port = process.env.PORT || 5050;
 app.listen(port, () => {

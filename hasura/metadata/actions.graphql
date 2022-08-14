@@ -1,14 +1,22 @@
 type Mutation {
   addBook(
     title: String!
-    name: String!
-    type: String!
-    base64str: String!
-    cover_photo: String
-    edition: Int
-    page_size: Int
-    price: money
-    sample_file: String
+    ISBN: String!
+    price: Float!
+    description: String!
+    edition: Int!
+    page_size: Int!
+    rating: Float!
+    comment: String!
+    cover_photo_name: String!
+    cover_photo_type: String!
+    cover_photo_base64str: String!
+    sample_file_name: String!
+    sample_file_type: String!
+    sample_file_base64str: String!
+    book_file_name: String!
+    book_file_type: String!
+    book_file_base64str: String!
   ): AddBookOutput
 }
 
@@ -81,11 +89,9 @@ type AuthorSignupOutput {
 }
 
 type AddBookOutput {
-  edition: Int!
-  file: String!
-  id: uuid!
-  sample_file: String!
-  title: String!
+  book_file_path: String!
+  cover_photo_path: String!
+  sample_file_path: String!
 }
 
 type LoginDerivedOutput {

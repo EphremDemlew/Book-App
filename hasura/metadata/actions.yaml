@@ -3,6 +3,8 @@ actions:
     definition:
       kind: synchronous
       handler: http://localhost:5000/addBook
+    permissions:
+      - role: author
   - name: login
     definition:
       kind: ""

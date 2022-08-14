@@ -27,16 +27,7 @@ select_permissions:
         - name
         - book_id
         - id
-      filter:
-        _and:
-          - book:
-              users:
-                isAuthor:
-                  _eq: true
-          - book:
-              users:
-                id:
-                  _eq: X-Hasura-User-Id
+      filter: {}
       allow_aggregations: true
   - role: user
     permission:
@@ -44,9 +35,5 @@ select_permissions:
         - name
         - book_id
         - id
-      filter:
-        book:
-          users:
-            id:
-              _eq: X-Hasura-User-Id
+      filter: {}
       allow_aggregations: true
