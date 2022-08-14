@@ -30,4 +30,5 @@ custom_types:
     - name: SignupAuthorOutput
     - name: AuthorSignupOutput
     - name: AddBookOutput
+    - name: LoginDerivedOutput
   scalars: []

@@ -26,6 +26,7 @@ type Mutation {
     last_name: String
     password: String
     isAuthor: Boolean
+    author_id: String
   ): SignUpOutput
 }
 
@@ -85,5 +86,14 @@ type AddBookOutput {
   id: uuid!
   sample_file: String!
   title: String!
+}
+
+type LoginDerivedOutput {
+  email: String!
+  first_name: String!
+  id: uuid!
+  isAuthor: String!
+  password: String!
+  token: String!
 }
 

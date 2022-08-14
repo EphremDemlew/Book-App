@@ -64,11 +64,12 @@ const fileUpload_execute = async (variables) => {
 // Sign Up Request Handler
 app.post("/signup", async (req, res) => {
   // get request input
-  const { email, first_name, last_name, isAuthor } = req.body.input;
+  const { email, first_name, last_name, isAuthor, author_id } = req.body.input;
 
   // run some business logic
   const password = await bcrypt.hash(req.body.input.password, 10);
   // execute the Hasura operation
+
   const { data, errors } = await signup_execute({
     email,
     first_name,
@@ -76,7 +77,6 @@ app.post("/signup", async (req, res) => {
     password,
     isAuthor,
   });
-
   // if Hasura operation errors, then throw error
   if (errors) {
     return res.status(400).json(errors[0]);
@@ -133,6 +133,9 @@ app.post("/signup", async (req, res) => {
   console.log(data.insert_users_one.isAuthor);
   console.log(token);
   // success
+
+  console.log(data.author_id);
+  data.author_id;
   return res.json({
     ...data.insert_users_one,
     token: token,
@@ -149,7 +152,11 @@ app.post("/Login", async (req, res) => {
   if (errors) {
     return res.status(400).json(errors[0]);
   }
-
+  if (data.users.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Account not found, Please Sign Up." });
+  }
   const validPassword = await bcrypt.compare(password, data.users[0].password);
   if (!validPassword)
     return res.status(400).json({ message: "Invalid Email or Password." });

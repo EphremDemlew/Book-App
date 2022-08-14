@@ -82,27 +82,25 @@ select_permissions:
   - role: author
     permission:
       columns:
-        - ISBN
-        - author_id
-        - comment
-        - cover_photo
-        - created_at
-        - description
+        - published_at
         - edition
-        - file
-        - id
         - page_size
         - price
-        - published_at
         - rating
+        - comment
+        - cover_photo
+        - description
+        - file
+        - ISBN
         - sample_file
         - title
+        - created_at
         - updated_at
-      filter:
-        author_id:
-          _eq: X-Hasura-User-Id
-      limit: 0
-      allow_aggregations: true
+        - author_id
+        - category_id
+        - discount_id
+        - id
+      filter: {}
   - role: user
     permission:
       columns:
@@ -120,11 +118,11 @@ select_permissions:
         - title
         - created_at
         - updated_at
+        - author_id
+        - category_id
+        - discount_id
         - id
-      filter:
-        users:
-          id:
-            _eq: X-Hasura-User-Id
+      filter: {}
 update_permissions:
   - role: author
     permission:
