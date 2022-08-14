@@ -2,7 +2,7 @@ type Mutation {
   addBook(
     title: String!
     ISBN: String!
-    price: Float!
+    price: numeric!
     description: String!
     edition: Int!
     page_size: Int!
@@ -50,7 +50,7 @@ type Mutation {
     ISBN: String!
     edition: Int!
     page_size: Int!
-    price: Float!
+    price: numeric!
     sample_file_base64str: String!
     sample_file_name: String!
     sample_file_type: String!
