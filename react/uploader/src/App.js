@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 
 const FILE_UPLOAD_MUTATION = `
-mutation addBook($book_file_base64str: String!,$book_file_name: String!,$book_file_type: String!,$comment: String!,$cover_photo_base64str: String!,$cover_photo_name: String!,$description: String!,$ISBN: String!,$edition: Int!,$page_size: Int!,$price: Float!,$sample_file_base64str: String!,$sample_file_name:String! , $sample_file_type:String! ,$title: String!,$cover_photo_type: String!,$rating:Float!) {
+mutation addBook($book_file_base64str: String!,$book_file_name: String!,$book_file_type: String!,$comment: String!,$cover_photo_base64str: String!,$cover_photo_name: String!,$description: String!,$ISBN: String!,$edition: Int!,$page_size: Int!,$price: numeric!,$sample_file_base64str: String!,$sample_file_name:String! , $sample_file_type:String! ,$title: String!,$cover_photo_type: String!,$rating:Float!) {
   addBook(book_file_base64str: $book_file_base64str, book_file_name: $book_file_name, book_file_type: $book_file_type, comment: $comment, cover_photo_base64str: $cover_photo_base64str, cover_photo_name: $cover_photo_name, description: $description, ISBN: $ISBN, edition: $edition, page_size: $page_size, price: $price, sample_file_base64str: $sample_file_base64str, sample_file_name: $sample_file_name, sample_file_type: $sample_file_type, title: $title, cover_photo_type: $cover_photo_type, rating: $rating) {
     book_file_path
     cover_photo_path
@@ -11,17 +11,50 @@ mutation addBook($book_file_base64str: String!,$book_file_name: String!,$book_fi
 }
 `;
 function App() {
-  const [file, setFile] = useState(null);
-  const [base64, setBase64Str] = useState(null);
-  const [filepath, setFilePath] = useState(null);
-  const fileUpload = (file) => {
+  const [textfile, setTextFile] = useState(null);
+  const [textbase64, textsetBase64Str] = useState(null);
+  const [textfilepath, setTextFilePath] = useState(null);
+  const [samplefile, setSampleFile] = useState(null);
+  const [samplebase64, samplesetBase64Str] = useState(null);
+  const [samplefilepath, setSampleFilePath] = useState(null);
+  const [imagefile, setImageFile] = useState(null);
+  const [imagebase64, imagesetBase64Str] = useState(null);
+  const [imagefilepath, setImageFilePath] = useState(null);
+  const fileUpload = (textfile, imagefile, samplefile) => {
     // make fetch api call to upload file
-    const fileName = file.name;
-    const fileType = file.type;
+    const book_file_name = textfile.name;
+    const book_file_type = textfile.type;
+    const cover_photo_name = imagefile.name;
+    const cover_photo_type = imagefile.type;
+    const sample_file_name = samplefile.name;
+    const sample_file_type = samplefile.type;
+    const description = "some desc";
+    const ISBN = "12ewdgdb";
+    const edition = 8;
+    const page_size = 354;
+    const price = 99;
+    const title = "Emegua";
+    const rating = 5.0;
+    const comment = "No comment";
+
     const variables = {
-      Image_name: fileName,
-      type: fileType,
-      base64: base64,
+      description: description,
+      ISBN: ISBN,
+      edition: edition,
+      page_size: page_size,
+      price: price,
+      title: title,
+      rating: rating,
+      comment: comment,
+      book_file_name: book_file_name,
+      book_file_type: book_file_type,
+      book_file_base64str: textbase64,
+      cover_photo_name: cover_photo_name,
+      cover_photo_type: cover_photo_type,
+      cover_photo_base64str: imagebase64,
+      sample_file_name: sample_file_name,
+      sample_file_type: sample_file_type,
+      sample_file_base64str: samplebase64,
     };
     const url = "http://localhost:8080/v1/graphql";
     const options = {
@@ -45,7 +78,9 @@ function App() {
         } else {
           console.log(res);
 
-          setFilePath(res.data.fileUpload.imagePath);
+          setTextFilePath(res.data.addBook.book_file_path);
+          setImageFilePath(res.data.addBook.cover_photo_path);
+          setSampleFilePath(res.data.addBook.sample_file_path);
         }
       });
   };
@@ -68,7 +103,7 @@ function App() {
   //   };
   // };
   const textOnChange = (e) => {
-    setFile(e.target.files[0]);
+    setTextFile(e.target.files[0]);
     const reader = new FileReader();
     if (e.target.files[0]) {
       reader.readAsBinaryString(e.target.files[0]);
@@ -77,7 +112,7 @@ function App() {
       const base64 = btoa(reader.result);
       // console.log(btoa(reader.result));
       // const base64 = Buffer.from(reader.result, "utf8").toString("base64");
-      setBase64Str(base64);
+      textsetBase64Str(base64);
     };
 
     reader.onerror = function () {
@@ -85,7 +120,7 @@ function App() {
     };
   };
   const imageOnChange = (e) => {
-    setFile(e.target.files[0]);
+    setImageFile(e.target.files[0]);
     const reader = new FileReader();
     if (e.target.files[0]) {
       reader.readAsBinaryString(e.target.files[0]);
@@ -94,7 +129,7 @@ function App() {
       const base64 = btoa(reader.result);
       // console.log(btoa(reader.result));
       // const base64 = Buffer.from(reader.result, "utf8").toString("base64");
-      setBase64Str(base64);
+      imagesetBase64Str(base64);
     };
 
     reader.onerror = function () {
@@ -102,7 +137,7 @@ function App() {
     };
   };
   const sampleOnChange = (e) => {
-    setFile(e.target.files[0]);
+    setSampleFile(e.target.files[0]);
     const reader = new FileReader();
     if (e.target.files[0]) {
       reader.readAsBinaryString(e.target.files[0]);
@@ -111,7 +146,7 @@ function App() {
       const base64 = btoa(reader.result);
       // console.log(btoa(reader.result));
       // const base64 = Buffer.from(reader.result, "utf8").toString("base64");
-      setBase64Str(base64);
+      samplesetBase64Str(base64);
     };
 
     reader.onerror = function () {
@@ -120,7 +155,7 @@ function App() {
   };
   const onFormSubmit = (e) => {
     e.preventDefault(); // Stop form submit
-    fileUpload(file);
+    fileUpload(textfile, imagefile, samplefile);
   };
   return (
     <div className="App">
@@ -132,12 +167,20 @@ function App() {
         <input type="file" onChange={sampleOnChange} required />
         <h1>sample </h1>
         <input type="file" onChange={imageOnChange} required />
-
+        <br />
         <button type="submit">Upload</button>
       </form>
       <div>
-        {filepath ? (
-          <a href={`http://localhost:5000${filepath}`}>Open file</a>
+        {textfilepath ? (
+          <a href={`http://localhost:5000${textfilepath}`}>Open text file</a>
+        ) : null}
+        {imagefilepath ? (
+          <a href={`http://localhost:5000${imagefilepath}`}>Open images</a>
+        ) : null}
+        {samplefilepath ? (
+          <a href={`http://localhost:5000${samplefilepath}`}>
+            Open sample text
+          </a>
         ) : null}
       </div>
     </div>
