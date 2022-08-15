@@ -9,12 +9,25 @@ export default function Payment() {
           value="CHAPUBK_TEST-8zApSEiKaOH4l3TOXavhn2ZDayDIRo4d"
         />
         <input type="hidden" name="tx_ref" value="negade-tx-12345678sss9" />
+        <br />
         <input type="input" name="amount" />
+        <br />
+
         <input type="hidden" name="currency" value="ETB" />
+        <br />
+
         <input type="email" name="email" />
+        <br />
+
         <input type="input" name="first_name" />
+        <br />
+
         <input type="input" name="last_name" />
+        <br />
+
         <input type="input" name="title" />
+        <br />
+
         <input
           type="hidden"
           name="description"

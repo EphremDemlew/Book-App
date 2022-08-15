@@ -14,7 +14,7 @@ require("dotenv").config();
 const app = express();
 
 app.use(express.json({ limit: "10mb" }));
-// app.use(express.urlencoded({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb" }));
 
 app.use(express.static("public"));
 
@@ -225,6 +225,9 @@ app.post("/orderVerify", payVerification);
 // Request Handler
 app.post("/addBook", fileUploade);
 
+app.get("api/success", (req, res) => {
+  res.json({ message: "check" });
+});
 // Callback from chapa
 app.get("/callbackurl", (req, res) => {
   console.log(req, res);
