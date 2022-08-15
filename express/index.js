@@ -225,6 +225,13 @@ app.post("/orderVerify", payVerification);
 // Request Handler
 app.post("/addBook", fileUploade);
 
+// Callback from chapa
+app.get("/callbackurl", (req, res) => {
+  console.log(req, res);
+
+  res.json({ message: "Got here" });
+});
+
 const port = process.env.PORT || 5050;
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
