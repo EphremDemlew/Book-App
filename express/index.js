@@ -1,8 +1,8 @@
 const express = require("express");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
-const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
+const cors = require("cors")
 const signup_query = require("./queries/signup_query");
 const login_query = require("./queries/login_query");
 const fileUpload_query = require("./queries/fileUploade_query");
@@ -12,13 +12,20 @@ const payVerification = require("./payment/checkout");
 require("dotenv").config();
 
 const app = express();
+app.use(cors())
 
 app.use(express.json({ limit: "10mb" }));
 // app.use(express.urlencoded({ limit: "10mb" }));
 
 app.use(express.static("public"));
-
+app.use(cors())
 // app.use(helmet());
+
+//app.use(function(req, res, next) {
+  //res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  //next();
+//});
 
 app.get("/", (req, res) => {
   res.send("Server running ... ");
@@ -85,6 +92,11 @@ app.post("/signup", async (req, res) => {
     password,
     isAuthor,
   });
+
+
+  console.log(data);
+
+
   // if Hasura operation errors, then throw error
   if (errors) {
     return res.status(400).json(errors[0]);
