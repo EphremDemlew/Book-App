@@ -7,9 +7,7 @@ const signup_query = require("./queries/signup_query");
 const login_query = require("./queries/login_query");
 const fileUpload_query = require("./queries/fileUploade_query");
 const fileUploade = require("./file_uploade/book_file_uploade");
-// const checkOut = require("./checkout");
-// const payVerification = require("./checkout");
-const axios = require("axios");
+const checkOut = require("./payment/checkout");
 require("dotenv").config();
 
 const app = express();
@@ -217,46 +215,8 @@ app.post("/Login", async (req, res) => {
   });
 });
 
-let config = {
-  headers: {
-    Authorization: "Bearer " + process.env.CHAPA_SECRET_KEY,
-  },
-};
 // Checkout request handler
-app.post("/order", async (req, res) => {
-  try {
-    //TODO: populate from DB
-    let tx_ref = "tx-myecommerce12345" + Date.now();
-    console.log(tx_ref);
-
-    let result = await axios.postForm(
-      "https://api.chapa.co/v1/transaction/initialize",
-      {
-        amount: req.body.total_price,
-        currency: "ETB",
-        email: req.body.email,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        tx_ref: tx_ref,
-        callback_url: "http://localhost:5000/api/success?tx_ref=" + tx_ref,
-        // "customization[title]": "I love e-commerce",
-        // "customization[description]": "It is time to pay",
-      },
-      config
-    );
-    console.log("result");
-    console.log(result.data);
-    //returning back the checkout url to Frontend
-
-    res.send(result.data);
-  } catch (error) {
-    console.log(error.data);
-    res.send("error message " + error);
-  }
-});
-
-// Checkout verification handler
-// app.post("/orderVerify", payVerification);
+app.post("/order", checkOut);
 
 // Request Handler
 app.post("/addBook", fileUploade);
@@ -264,14 +224,8 @@ app.post("/addBook", fileUploade);
 app.get("/api/success", (req, res) => {
   console.log("sucess");
   const ref = req.query.tx_ref;
-
+  console.log(ref);
   res.json({ message: "sucessfully checked out" });
-});
-// Callback from chapa
-app.get("/callbackurl", (req, res) => {
-  console.log(req, res);
-
-  res.json({ message: "Got here" });
 });
 
 const port = process.env.PORT || 5050;
