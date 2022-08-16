@@ -30,6 +30,13 @@ array_relationships:
         table:
           schema: public
           name: sold_items
+  - name: ratings
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: user_rating
   - name: shopping_sessions
     using:
       foreign_key_constraint_on:
@@ -37,6 +44,13 @@ array_relationships:
         table:
           schema: public
           name: shopping_session
+  - name: user_comments
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: user_comments
   - name: users
     using:
       foreign_key_constraint_on:

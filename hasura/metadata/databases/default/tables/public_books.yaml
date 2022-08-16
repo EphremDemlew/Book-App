@@ -19,6 +19,13 @@ array_relationships:
         table:
           schema: public
           name: category
+  - name: ratings
+    using:
+      foreign_key_constraint_on:
+        column: book_id
+        table:
+          schema: public
+          name: user_rating
   - name: sales_records
     using:
       foreign_key_constraint_on:
@@ -33,6 +40,13 @@ array_relationships:
         table:
           schema: public
           name: shopping_session
+  - name: user_comments
+    using:
+      foreign_key_constraint_on:
+        column: book_id
+        table:
+          schema: public
+          name: user_comments
   - name: users
     using:
       foreign_key_constraint_on:

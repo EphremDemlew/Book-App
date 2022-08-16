@@ -1,6 +1,6 @@
 table:
   schema: public
-  name: rating
+  name: user_rating
 object_relationships:
   - name: book
     using:

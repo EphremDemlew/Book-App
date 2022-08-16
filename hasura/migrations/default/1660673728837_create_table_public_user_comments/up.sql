@@ -1,0 +1,2 @@
+CREATE TABLE "public"."user_comments" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "comments" text NOT NULL, "book_id" uuid NOT NULL, "user_id" uuid NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("book_id") REFERENCES "public"."books"("id") ON UPDATE restrict ON DELETE restrict, FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON UPDATE restrict ON DELETE restrict, UNIQUE ("id"));
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
