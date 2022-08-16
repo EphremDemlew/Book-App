@@ -19,6 +19,7 @@ const fileUpload = async (req, res, next) => {
     price,
     title,
     rating,
+    author,
   } = req.body.input;
 
   let textfileBuffer = Buffer.from(book_file_base64str, "base64");
@@ -43,8 +44,8 @@ const fileUpload = async (req, res, next) => {
 
     // insert into db
     const HASURA_MUTATION = `
-        mutation ($comment: String!, $description: String!, $ISBN: String!, $edition: Int!, $page_size: Int!, $price: numeric!, $title: String!, $rating: Float!, $cover_photo: String = "", $file: String = "",$sample: String = "") {
-            insert_books_one(object: {comment: $comment, description: $description, ISBN: $ISBN, edition: $edition, page_size: $page_size, price: $price, title: $title, rating: $rating, cover_photo: $cover_photo, file: $file, sample_file: $sample}) {
+        mutation ($comment: String!, $description: String!, $ISBN: String!, $edition: Int!, $page_size: Int!, $price: numeric!, $title: String!, $rating: Float!, $cover_photo: String = "", $file: String = "",$sample: String = "" ,$author_id: uuid = "") {
+            insert_books_one(object: {comment: $comment, description: $description, ISBN: $ISBN, edition: $edition, page_size: $page_size, price: $price, title: $title, rating: $rating, cover_photo: $cover_photo, file: $file, sample_file: $sample , author_id: $author_id}) {
               id
             }
           }
@@ -59,6 +60,7 @@ const fileUpload = async (req, res, next) => {
       price: price,
       title: title,
       rating: rating,
+      author_id: author,
       cover_photo: "/files/" + cover_photo_name,
       file: "/files/" + book_file_name,
       sample: "/files/" + sample_file_name,

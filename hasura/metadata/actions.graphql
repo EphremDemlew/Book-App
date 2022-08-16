@@ -17,6 +17,7 @@ type Mutation {
     book_file_name: String!
     book_file_type: String!
     book_file_base64str: String!
+    author: String!
   ): AddBookOutput
 }
 
