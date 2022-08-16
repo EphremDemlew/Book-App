@@ -3,6 +3,7 @@
 - "!include public_category.yaml"
 - "!include public_discount.yaml"
 - "!include public_payment_details.yaml"
+- "!include public_rating.yaml"
 - "!include public_shopping_session.yaml"
 - "!include public_sold_items.yaml"
 - "!include public_users.yaml"
