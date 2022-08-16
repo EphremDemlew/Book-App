@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
 const signup_query = require("./queries/signup_query");
 const login_query = require("./queries/login_query");
+const admin_login_query = require("./queries/adminLogin");
 const fileUpload_query = require("./queries/fileUploade_query");
 const fileUploade = require("./file_uploade/book_file_uploade");
 const checkOut = require("./payment/checkout");
@@ -45,6 +46,20 @@ const login_execute = async (variables) => {
     headers: { "x-hasura-admin-secret": "myadminsecretkey" },
     body: JSON.stringify({
       query: login_query,
+      variables,
+    }),
+  });
+  const data = await fetchResponse.json();
+  console.log("DEBUG: ", data);
+  return data;
+};
+// login query execute
+const admin_login_execute = async (variables) => {
+  const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
+    method: "POST",
+    headers: { "x-hasura-admin-secret": "myadminsecretkey" },
+    body: JSON.stringify({
+      query: admin_login_query,
       variables,
     }),
   });
@@ -190,6 +205,55 @@ app.post("/Login", async (req, res) => {
   );
 
   console.log("......................");
+  console.log(token);
+  console.log("......................");
+
+  // success
+  return res.json({
+    ...data.users[0],
+    token: token,
+  });
+});
+
+// Login Request Handler
+app.post("/adminLogin", async (req, res) => {
+  // get request input
+  const { email, password } = req.body.input;
+
+  const { data, errors } = await admin_login_execute({ email });
+  // if Hasura operation errors, then throw error
+  if (errors) {
+    return res.status(400).json(errors[0]);
+  }
+  if (data.users.length === 0) {
+    return res.status(400).json({ message: "Incorrect cridentials." });
+  }
+
+  const validPassword = await bcrypt.compare(password, data.users[0].password);
+  if (!validPassword)
+    return res.status(400).json({ message: "Invalid Email or Password." });
+
+  // token claim for admin users
+  const admintokenContents = {
+    sub: data.users[0].id,
+    name: data.users[0].first_name,
+    iat: Date.now() / 1000,
+    iss: "https://myapp.com/",
+    "https://hasura.io/jwt/claims": {
+      "x-hasura-allowed-roles": ["admin"],
+      "x-hasura-user-id": data.users[0].id,
+      "x-hasura-default-role": "admin",
+      "x-hasura-role": "admin",
+    },
+    exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
+  };
+
+  const token = jwt.sign(
+    admintokenContents,
+    process.env.HASURA_JWT_SECRET_KEY || "z8pXvFrDjGWb3mRSJBAp9ZljHRnMofLF"
+  );
+
+  console.log("......................" + data.users[0]);
   console.log(token);
   console.log("......................");
 

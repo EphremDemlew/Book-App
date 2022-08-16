@@ -5,6 +5,12 @@ actions:
       handler: http://localhost:5000/addBook
     permissions:
       - role: author
+  - name: adminLogin
+    definition:
+      kind: ""
+      handler: http://localhost:5000/adminLogin
+    permissions:
+      - role: user
   - name: login
     definition:
       kind: ""
@@ -21,10 +27,6 @@ actions:
       - role: author
       - role: user
       - role: anonymous
-  - name: uploadeBook
-    definition:
-      kind: synchronous
-      handler: http://localhost:5000/uploadeBook
 custom_types:
   enums: []
   input_objects: []
@@ -38,4 +40,5 @@ custom_types:
     - name: AddBookOutput
     - name: LoginDerivedOutput
     - name: uploadeBookOutput
+    - name: AdminLoginOutput
   scalars: []

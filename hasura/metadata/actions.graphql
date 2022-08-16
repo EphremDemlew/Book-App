@@ -22,6 +22,13 @@ type Mutation {
 }
 
 type Query {
+  adminLogin(
+    email: String!
+    password: String!
+  ): AdminLoginOutput
+}
+
+type Query {
   login(
     email: String!
     password: String!
@@ -37,28 +44,6 @@ type Mutation {
     isAuthor: Boolean
     author_id: String
   ): SignUpOutput
-}
-
-type Mutation {
-  uploadeBook(
-    book_file_base64str: String!
-    book_file_name: String!
-    book_file_type: String!
-    comment: String!
-    cover_photo_base64str: String!
-    cover_photo_name: String!
-    description: String!
-    ISBN: String!
-    edition: Int!
-    page_size: Int!
-    price: numeric!
-    sample_file_base64str: String!
-    sample_file_name: String!
-    sample_file_type: String!
-    title: String!
-    cover_photo_type: String!
-    rating: Float!
-  ): uploadeBookOutput
 }
 
 type SignUpOutput {
@@ -130,5 +115,13 @@ type uploadeBookOutput {
   book_file_path: String!
   cover_photo_path: String!
   sample_file_path: String!
+}
+
+type AdminLoginOutput {
+  id: uuid!
+  email: String!
+  first_name: String!
+  password: String!
+  token: String!
 }
 
