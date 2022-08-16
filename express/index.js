@@ -1,5 +1,5 @@
 const express = require("express");
-const fs = require("fs");
+const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
@@ -221,14 +221,27 @@ app.post("/order", checkOut);
 // Request Handler
 app.post("/addBook", fileUploade);
 
-app.get("/api/success", (req, res) => {
-  console.log("sucess");
-  const ref = req.query.tx_ref;
-  const book = req.query.user_id;
-  const user = req.query.book_id;
+app.get("/api/success", async (req, res) => {
+  let config = {
+    headers: {
+      Authorization: "Bearer " + process.env.CHAPA_SECRET_KEY,
+    },
+  };
+  console.log("sucessfully checked out");
+  console.log(req.query);
+  try {
+    let result = await axios.get(
+      "https://api.chapa.co/v1/transaction/verify/" + req.query.tx_ref,
+      config
+    );
 
-  console.log(ref, user, book);
-  res.json({ message: "sucessfully checked out" });
+    console.log("Result: " + result.data);
+    //TODO: save transaction
+    res.send(" payment transaction result " + JSON.stringify(result.data));
+  } catch (error) {
+    console.log("something happened " + error);
+    res.send(" something happened " + error);
+  }
 });
 
 const port = process.env.PORT || 5050;
