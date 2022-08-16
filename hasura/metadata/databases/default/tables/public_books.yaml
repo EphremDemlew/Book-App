@@ -12,13 +12,6 @@ object_relationships:
     using:
       foreign_key_constraint_on: author_id
 array_relationships:
-  - name: cart_items
-    using:
-      foreign_key_constraint_on:
-        column: book_id
-        table:
-          schema: public
-          name: cart_item
   - name: categories
     using:
       foreign_key_constraint_on:
@@ -32,7 +25,14 @@ array_relationships:
         column: book_id
         table:
           schema: public
-          name: order_items
+          name: sold_items
+  - name: shopping_sessions
+    using:
+      foreign_key_constraint_on:
+        column: book_id
+        table:
+          schema: public
+          name: shopping_session
   - name: users
     using:
       foreign_key_constraint_on:

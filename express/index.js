@@ -224,7 +224,10 @@ app.post("/addBook", fileUploade);
 app.get("/api/success", (req, res) => {
   console.log("sucess");
   const ref = req.query.tx_ref;
-  console.log(ref);
+  const book = req.query.user_id;
+  const user = req.query.book_id;
+
+  console.log(ref, user, book);
   res.json({ message: "sucessfully checked out" });
 });
 

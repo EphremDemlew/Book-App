@@ -29,7 +29,7 @@ array_relationships:
         column: user_id
         table:
           schema: public
-          name: order_items
+          name: sold_items
   - name: shopping_sessions
     using:
       foreign_key_constraint_on:

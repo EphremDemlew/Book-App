@@ -30,7 +30,6 @@ const fileUpload = async (req, res, next) => {
       textfileBuffer,
       "base64"
     );
-
     fs.writeFileSync(
       "./public/files/" + cover_photo_name,
       imagefileBuffer,

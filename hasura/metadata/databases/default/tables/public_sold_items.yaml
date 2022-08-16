@@ -1,0 +1,44 @@
+table:
+  schema: public
+  name: sold_items
+object_relationships:
+  - name: book
+    using:
+      foreign_key_constraint_on: book_id
+  - name: payment_detail
+    using:
+      foreign_key_constraint_on: payment_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+array_relationships:
+  - name: payment_details
+    using:
+      foreign_key_constraint_on:
+        column: order_id
+        table:
+          schema: public
+          name: payment_details
+select_permissions:
+  - role: author
+    permission:
+      columns:
+        - sales_count
+        - sales
+        - book_id
+        - id
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+        - sales_count
+        - sales
+        - book_id
+        - id
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true

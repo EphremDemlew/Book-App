@@ -11,6 +11,8 @@ const checkOut = async (req, res) => {
     //TODO: populate from DB
     let tx_ref = "tx-myecommerce12345" + Date.now();
     console.log(tx_ref);
+    let book = req.body.book_id;
+    let user = req.body.user_id;
 
     let result = await axios.postForm(
       "https://api.chapa.co/v1/transaction/initialize",
@@ -21,7 +23,11 @@ const checkOut = async (req, res) => {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         tx_ref: tx_ref,
-        callback_url: "http://localhost:5000/api/success?tx_ref=" + tx_ref,
+        callback_url:
+          "http://localhost:5000/api/success?tx_ref=" +
+          tx_ref +
+          "&user_id=" +
+          user,
         // "customization[title]": "I love e-commerce",
         // "customization[description]": "It is time to pay",
       },
