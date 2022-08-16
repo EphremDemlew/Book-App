@@ -53,21 +53,6 @@ const login_execute = async (variables) => {
   return data;
 };
 
-// file Upload query execute
-const fileUpload_execute = async (variables) => {
-  const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
-    method: "POST",
-    headers: { "x-hasura-admin-secret": "myadminsecretkey" },
-    body: JSON.stringify({
-      query: fileUpload_query,
-      variables,
-    }),
-  });
-  const data = await fetchResponse.json();
-  console.log("DEBUG: ", data);
-  return data;
-};
-
 // Sign Up Request Handler
 app.post("/signup", async (req, res) => {
   // get request input

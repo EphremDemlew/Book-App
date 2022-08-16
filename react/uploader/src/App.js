@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Link } from "react-router-dom";
 
 const FILE_UPLOAD_MUTATION = `
 mutation addBook($book_file_base64str: String!,$book_file_name: String!,$book_file_type: String!,$comment: String!,$cover_photo_base64str: String!,$cover_photo_name: String!,$description: String!,$ISBN: String!,$edition: Int!,$page_size: Int!,$price: numeric!,$sample_file_base64str: String!,$sample_file_name:String! , $sample_file_type:String! ,$title: String!,$cover_photo_type: String!,$rating:Float!,$author:String!) {
@@ -163,7 +162,6 @@ function App() {
   };
   return (
     <div className="App">
-      <Link to="/payment">Payment</Link>
       <form onSubmit={onFormSubmit}>
         <h1>File Upload</h1>
         <h1>text </h1>
