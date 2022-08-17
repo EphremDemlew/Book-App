@@ -6,6 +6,7 @@ const cors = require("cors");
 const signup_query = require("./queries/signup_query");
 const login_query = require("./queries/login_query");
 const admin_login_query = require("./queries/adminLogin");
+const soldItems = require("./queries/soldItems");
 const fileUpload_query = require("./queries/fileUploade_query");
 const fileUploade = require("./file_uploade/book_file_uploade");
 const checkOut = require("./payment/checkout");
@@ -22,6 +23,20 @@ app.get("/", (req, res) => {
   res.send("Server running ... ");
 });
 
+// soldItems query execute
+const soldItems_execute = async (variables) => {
+  const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
+    method: "POST",
+    headers: { "x-hasura-admin-secret": "myadminsecretkey" },
+    body: JSON.stringify({
+      query: soldItems,
+      variables,
+    }),
+  });
+  const data = await fetchResponse.json();
+  console.log("DEBUG: ", data);
+  return data;
+};
 // signup query execute
 const signup_execute = async (variables) => {
   const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
@@ -288,10 +303,26 @@ app.get("/api/success", async (req, res) => {
     );
 
     console.log("Result: " + result.data);
+    console.log(result.data);
+    console.log(typeof result.data.amount);
+    const status = result.data.status;
+    const sales_count = 3;
+    const sales = 600;
+    const { data, errors } = await soldItems_execute({
+      sales_count,
+      sales,
+      book_id,
+      user_id,
+    });
+    // if Hasura operation errors, then throw error
+    if (errors) {
+      return res.status(400).json(errors[0]);
+    }
 
     console.log(req.query.tx_ref);
     //TODO: save transaction
-    res.send(" payment transaction result " + JSON.stringify(result.data));
+    // res.send(" payment transaction result " + JSON.stringify(result.data));
+    res.redirect("http://localhost:3000/");
   } catch (error) {
     console.log("something happened " + error);
     res.send(" something happened " + error);
