@@ -3,6 +3,7 @@ const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 const signup_query = require("./queries/signup_query");
 const login_query = require("./queries/login_query");
 const admin_login_query = require("./queries/adminLogin");
@@ -15,7 +16,7 @@ const app = express();
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cors);
 app.use(express.static("public"));
 
 // app.use(helmet());
