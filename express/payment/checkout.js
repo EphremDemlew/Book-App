@@ -9,10 +9,11 @@ let config = {
 const checkOut = async (req, res) => {
   try {
     //TODO: populate from DB
-    let tx_ref = "tx-myecommerce12345" + Date.now();
-    console.log(tx_ref);
     let book = req.body.book_id;
     let user = req.body.user_id;
+
+    let tx_ref = `tx-myecommerce12345${Date.now()}~${book}~${user}`;
+    console.log(tx_ref);
 
     let result = await axios.postForm(
       "https://api.chapa.co/v1/transaction/initialize",

@@ -275,14 +275,21 @@ app.get("/api/success", async (req, res) => {
     },
   };
   console.log("sucessfully checked out");
-  console.log(req.query);
+  const tx_ref = req.query.tx_ref;
+  const inputs = tx_ref.split("~");
+  const book_id = inputs[1];
+  const user_id = inputs[2];
+
+  console.log(`the book id ${book_id} , the user id ${user_id}`);
   try {
     let result = await axios.get(
-      "https://api.chapa.co/v1/transaction/verify/" + req.query.tx_ref,
+      "https://api.chapa.co/v1/transaction/verify/" + tx_ref,
       config
     );
 
     console.log("Result: " + result.data);
+
+    console.log(req.query.tx_ref);
     //TODO: save transaction
     res.send(" payment transaction result " + JSON.stringify(result.data));
   } catch (error) {
