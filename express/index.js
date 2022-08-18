@@ -8,6 +8,7 @@ const login_query = require("./queries/login_query");
 const admin_login_query = require("./queries/adminLogin");
 const soldItems = require("./queries/soldItems");
 const shoppingSession = require("./queries/shopingSession");
+const paymentDetail = require("./queries/paymentDetails");
 const fileUpload_query = require("./queries/fileUploade_query");
 const fileUploade = require("./file_uploade/book_file_uploade");
 const checkOut = require("./payment/checkout");
@@ -33,6 +34,20 @@ const shoping_execute = async (variables) => {
     headers: { "x-hasura-admin-secret": "myadminsecretkey" },
     body: JSON.stringify({
       query: shoppingSession,
+      variables,
+    }),
+  });
+  const data = await fetchResponse.json();
+  console.log("DEBUG: ", data);
+  return data;
+};
+// shoping query execute
+const paymentDetail_execute = async (variables) => {
+  const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
+    method: "POST",
+    headers: { "x-hasura-admin-secret": "myadminsecretkey" },
+    body: JSON.stringify({
+      query: paymentDetail,
       variables,
     }),
   });
@@ -327,6 +342,8 @@ app.get("/api/success", async (req, res) => {
     // const status = result.data.status;
     const sales_count = 3;
     const sales = 600;
+    const status = result.data.status;
+    console.log(result.data.status);
 
     console.log("it got here ..............");
     // const { data, errors } = await shoping_execute({
@@ -348,6 +365,7 @@ app.get("/api/success", async (req, res) => {
       book_id,
       user_id,
     });
+    const order = data.insert_sold_items.returning[0].id;
     // if Hasura operation errors, then throw error
     if (errors) {
       console.log("The error is");
@@ -367,7 +385,21 @@ app.get("/api/success", async (req, res) => {
       }
     };
 
-    shopping;
+    const paymentdetail = async () => {
+      const order_id = order;
+      const { data, errors } = await paymentDetail_execute({
+        status,
+        order_id,
+      });
+      // if Hasura operation errors, then throw error
+      if (errors) {
+        console.log("found the error part");
+        return res.status(400).json(errors[0]);
+      }
+    };
+
+    shopping();
+    paymentdetail();
     console.log(req.query.tx_ref);
     //TODO: save transaction
     // res.send(" payment transaction result " + JSON.stringify(result.data));
