@@ -13,6 +13,7 @@ const payCheckOut = async (req, res) => {
     let user = req.body.user_id;
 
     console.log(process.env.CHAPA_SECRET_KEY);
+    console.log(req.body);
     let tx_ref = `tx-myecommerce12345${Date.now()}~${book}~${user}`;
     console.log(tx_ref);
 

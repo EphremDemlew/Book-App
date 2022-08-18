@@ -436,8 +436,6 @@ app.get("/api/pay/success", async (req, res) => {
     const sales_count = 3;
     const sales = 600;
 
-    shopping();
-
     console.log(req.query.tx_ref);
     //TODO: save transaction
     // res.send(" payment transaction result " + JSON.stringify(result.data));
