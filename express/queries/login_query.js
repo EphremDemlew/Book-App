@@ -7,6 +7,7 @@ query login($email: String!){
     password
     isAuthor
     first_name
+    last_name
   }
 }
 `;

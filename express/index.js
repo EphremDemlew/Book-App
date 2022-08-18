@@ -7,9 +7,12 @@ const signup_query = require("./queries/signup_query");
 const login_query = require("./queries/login_query");
 const admin_login_query = require("./queries/adminLogin");
 const soldItems = require("./queries/soldItems");
+const shoppingSession = require("./queries/shopingSession");
 const fileUpload_query = require("./queries/fileUploade_query");
 const fileUploade = require("./file_uploade/book_file_uploade");
 const checkOut = require("./payment/checkout");
+const payCheckOut = require("./payment/payCheckOut");
+// const soldItemsHelper = require("./")
 require("dotenv").config();
 
 const app = express();
@@ -23,6 +26,20 @@ app.get("/", (req, res) => {
   res.send("Server running ... ");
 });
 
+// shoping query execute
+const shoping_execute = async (variables) => {
+  const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
+    method: "POST",
+    headers: { "x-hasura-admin-secret": "myadminsecretkey" },
+    body: JSON.stringify({
+      query: shoppingSession,
+      variables,
+    }),
+  });
+  const data = await fetchResponse.json();
+  console.log("DEBUG: ", data);
+  return data;
+};
 // soldItems query execute
 const soldItems_execute = async (variables) => {
   const fetchResponse = await fetch("http://localhost:8080/v1/graphql", {
@@ -280,6 +297,9 @@ app.post("/adminLogin", async (req, res) => {
 // Checkout request handler
 app.post("/order", checkOut);
 
+// Checkout request handler
+app.post("/pay/order", payCheckOut);
+
 // Request Handler
 app.post("/addBook", fileUploade);
 
@@ -304,10 +324,24 @@ app.get("/api/success", async (req, res) => {
 
     console.log("Result: " + result.data);
     console.log(result.data);
-    console.log(typeof result.data.amount);
-    const status = result.data.status;
+    // const status = result.data.status;
     const sales_count = 3;
     const sales = 600;
+
+    console.log("it got here ..............");
+    // const { data, errors } = await shoping_execute({
+    //   // sales_count,
+    //   // sales,
+    //   book_id,
+    //   user_id,
+    // });
+    // // if Hasura operation errors, then throw error
+    // if (errors) {
+    //   console.log("The error is");
+    //   console.log(errors);
+    //   return res.status(400).json(errors[0]);
+    // }
+
     const { data, errors } = await soldItems_execute({
       sales_count,
       sales,
@@ -316,13 +350,68 @@ app.get("/api/success", async (req, res) => {
     });
     // if Hasura operation errors, then throw error
     if (errors) {
+      console.log("The error is");
+      console.log(errors);
       return res.status(400).json(errors[0]);
     }
 
+    const shopping = async () => {
+      const { data, errors } = await shoping_execute({
+        book_id,
+        user_id,
+      });
+      // if Hasura operation errors, then throw error
+      if (errors) {
+        console.log("found the error part");
+        return res.status(400).json(errors[0]);
+      }
+    };
+
+    shopping;
     console.log(req.query.tx_ref);
     //TODO: save transaction
     // res.send(" payment transaction result " + JSON.stringify(result.data));
     res.redirect("http://localhost:3000/");
+  } catch (error) {
+    console.log("something happened " + error);
+    res.send(" something happened " + error);
+  }
+});
+
+app.get("/api/pay/success", async (req, res) => {
+  let config = {
+    headers: {
+      Authorization: "Bearer " + process.env.CHAPA_SECRET_KEY,
+    },
+  };
+  console.log("sucessfully checked out");
+  const tx_ref = req.query.tx_ref;
+  const inputs = tx_ref.split("~");
+  const book_id = inputs[1];
+  const user_id = inputs[2];
+
+  console.log(`the book id ${book_id} , the user id ${user_id}`);
+  try {
+    let result = await axios.get(
+      "https://api.chapa.co/v1/transaction/verify/" + tx_ref,
+      config
+    );
+
+    console.log("Result: " + result.data);
+    console.log(result.data);
+    console.log(typeof result.data.amount);
+    const status = result.data.status;
+    const sales_count = 3;
+    const sales = 600;
+
+    shopping();
+
+    console.log(req.query.tx_ref);
+    //TODO: save transaction
+    // res.send(" payment transaction result " + JSON.stringify(result.data));
+    res.send(
+      "<h1>You have finished sucessfully with your payment, you can close this tab now.</h1>"
+    );
   } catch (error) {
     console.log("something happened " + error);
     res.send(" something happened " + error);

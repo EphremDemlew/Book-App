@@ -6,7 +6,7 @@ let config = {
     Authorization: "Bearer " + process.env.CHAPA_SECRET_KEY,
   },
 };
-const checkOut = async (req, res) => {
+const payCheckOut = async (req, res) => {
   try {
     //TODO: populate from DB
     let book = req.body.book_id;
@@ -25,7 +25,7 @@ const checkOut = async (req, res) => {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         tx_ref: tx_ref,
-        callback_url: `http://localhost:5000/api/success?tx_ref=${tx_ref}`,
+        callback_url: `http://localhost:5000/api/pay/success?tx_ref=${tx_ref}`,
         // "customization[title]": "I love e-commerce",
         // "customization[description]": "It is time to pay",
       },
@@ -42,4 +42,4 @@ const checkOut = async (req, res) => {
   }
 };
 
-module.exports = checkOut;
+module.exports = payCheckOut;
