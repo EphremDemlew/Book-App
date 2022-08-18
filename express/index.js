@@ -431,16 +431,71 @@ app.get("/api/pay/success", async (req, res) => {
 
     console.log("Result: " + result.data);
     console.log(result.data);
-    console.log(typeof result.data.amount);
-    const status = result.data.status;
+    // const status = result.data.status;
     const sales_count = 3;
     const sales = 600;
+    const status = result.data.status;
+    console.log(result.data.status);
 
+    console.log("it got here ..............");
+    // const { data, errors } = await shoping_execute({
+    //   // sales_count,
+    //   // sales,
+    //   book_id,
+    //   user_id,
+    // });
+    // // if Hasura operation errors, then throw error
+    // if (errors) {
+    //   console.log("The error is");
+    //   console.log(errors);
+    //   return res.status(400).json(errors[0]);
+    // }
+
+    const { data, errors } = await soldItems_execute({
+      sales_count,
+      sales,
+      book_id,
+      user_id,
+    });
+    const order = data.insert_sold_items.returning[0].id;
+    // if Hasura operation errors, then throw error
+    if (errors) {
+      console.log("The error is");
+      console.log(errors);
+      return res.status(400).json(errors[0]);
+    }
+
+    const shopping = async () => {
+      const { data, errors } = await shoping_execute({
+        book_id,
+        user_id,
+      });
+      // if Hasura operation errors, then throw error
+      if (errors) {
+        console.log("found the error part");
+        return res.status(400).json(errors[0]);
+      }
+    };
+
+    const paymentdetail = async () => {
+      const order_id = order;
+      const { data, errors } = await paymentDetail_execute({
+        status,
+        order_id,
+      });
+      // if Hasura operation errors, then throw error
+      if (errors) {
+        console.log("found the error part");
+        return res.status(400).json(errors[0]);
+      }
+    };
+
+    shopping();
+    paymentdetail();
     console.log(req.query.tx_ref);
-    //TODO: save transaction
-    // res.send(" payment transaction result " + JSON.stringify(result.data));
+
     res.send(
-      "<h1>You have finished sucessfully with your payment, you can close this tab now.</h1>"
+      "<h1>You have finished sucessfully with your payment, <br /> you can close this tab now.</h1>"
     );
   } catch (error) {
     console.log("something happened " + error);
